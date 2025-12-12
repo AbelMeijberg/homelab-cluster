@@ -1,0 +1,118 @@
+# kube-prometheus-stack values for homelab single-node setup
+# Sized for learning/development, not production
+
+# Global settings
+fullnameOverride: ""
+
+# Prometheus configuration
+prometheus:
+  prometheusSpec:
+    # Homelab-friendly retention
+    retention: 7d
+    retentionSize: "5GB"
+
+    # Reduced resources for single node
+    resources:
+      requests:
+        memory: 400Mi
+        cpu: 100m
+      limits:
+        memory: 1Gi
+        cpu: 500m
+
+    # Storage - using local path for simplicity
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+
+# Grafana configuration
+grafana:
+  # Ingress for Grafana UI
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: web
+    hosts:
+      - grafana.homelab
+    path: /
+    pathType: Prefix
+
+  # Reduced resources
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 50m
+    limits:
+      memory: 256Mi
+      cpu: 200m
+
+  # Persistence for dashboards and settings
+  persistence:
+    enabled: true
+    size: 2Gi
+
+# Alertmanager configuration
+alertmanager:
+  alertmanagerSpec:
+    # Reduced resources
+    resources:
+      requests:
+        memory: 32Mi
+        cpu: 10m
+      limits:
+        memory: 64Mi
+        cpu: 100m
+
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 1Gi
+
+# Node Exporter - keep enabled for host metrics
+nodeExporter:
+  enabled: true
+
+# kube-state-metrics - keep enabled for k8s object metrics
+kubeStateMetrics:
+  enabled: true
+
+# Prometheus Operator
+prometheusOperator:
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 50m
+    limits:
+      memory: 256Mi
+      cpu: 200m
+
+# Disable components not needed for single-node homelab
+# These are for multi-cluster or HA setups
+thanosRuler:
+  enabled: false
+
+# Default ServiceMonitor settings
+defaultRules:
+  create: true
+  rules:
+    # Keep useful alerting rules
+    alertmanager: true
+    general: true
+    k8sContainerMemoryWorkingSetBytes: true
+    k8sContainerCpuUsageSecondsTotal: true
+    kubeApiserverAvailability: true
+    kubePrometheusNodeRecording: true
+    kubernetesApps: true
+    kubernetesResources: true
+    kubernetesStorage: true
+    kubernetesSystem: true
+    node: true
+    prometheus: true
