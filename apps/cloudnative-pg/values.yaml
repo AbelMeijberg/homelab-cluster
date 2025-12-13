@@ -1,0 +1,21 @@
+# CloudNativePG Operator values for homelab
+# Manages PostgreSQL databases across the cluster via the Cluster CRD
+#
+# The Operator Pattern:
+# - This Helm chart installs a "controller" that watches for Cluster CRDs
+# - When you create a Cluster resource, the operator provisions PostgreSQL
+# - It handles: pod creation, replication, failover, backups, credential rotation
+# - You declare WHAT you want, the operator figures out HOW
+
+# Resource limits for homelab single-node setup
+resources:
+  requests:
+    memory: 64Mi
+    cpu: 25m
+  limits:
+    memory: 256Mi
+    cpu: 200m
+
+# Monitoring - enable if you want Prometheus metrics
+monitoring:
+  podMonitorEnabled: false

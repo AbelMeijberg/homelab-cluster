@@ -1,0 +1,11 @@
+# Sealed Secrets Controller values for homelab
+# Manages encryption/decryption of SealedSecret resources
+
+# Resource limits for homelab
+resources:
+  requests:
+    memory: 32Mi
+    cpu: 10m
+  limits:
+    memory: 128Mi
+    cpu: 100m

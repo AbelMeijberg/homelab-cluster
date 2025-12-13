@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: miniflux
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    # Source 1: Miniflux Helm chart from gabe565
+    - repoURL: https://charts.gabe565.com
+      chart: miniflux
+      targetRevision: 0.9.3
+      helm:
+        valueFiles:
+          - $values/apps/miniflux/values.yaml
+    # Source 2: Git repo for Helm values reference
+    - repoURL: https://github.com/AbelMeijberg/homelab-cluster.git
+      targetRevision: main
+      ref: values
+    # Source 3: Raw manifests (CNPG database)
+    # Note: admin-secret.yaml will be added after running kubeseal
+    - repoURL: https://github.com/AbelMeijberg/homelab-cluster.git
+      targetRevision: main
+      path: apps/miniflux
+      directory:
+        include: "database.yaml"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: miniflux
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

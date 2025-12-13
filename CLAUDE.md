@@ -20,6 +20,15 @@ kubectl patch application <app-name> -n argocd --type merge -p '{"operation":{"i
 
 # View ArgoCD logs
 kubectl logs -n argocd deployment/argocd-server
+
+# Check CloudNativePG database clusters
+kubectl get clusters --all-namespaces
+
+# View CNPG-generated database credentials
+kubectl get secret <cluster-name>-app -n <namespace> -o jsonpath='{.data.uri}' | base64 -d
+
+# Create a sealed secret (encrypt plaintext secret)
+kubectl create secret generic <name> --from-literal=KEY=value --dry-run=client -o yaml | kubeseal --format yaml > sealed-secret.yaml
 ```
 
 ## Architecture
@@ -30,9 +39,12 @@ kubectl logs -n argocd deployment/argocd-server
 root-app.yaml (entry point - watches apps/ directory)
     │
     └── apps/
-        ├── argocd.yaml          → bootstrap/argocd/ (self-manages ArgoCD)
-        ├── homepage.yaml        → Helm chart with apps/homepage/values.yaml
-        └── kube-prometheus-stack.yaml → Helm chart with apps/kube-prometheus-stack/values.yaml
+        ├── argocd.yaml              → bootstrap/argocd/ (self-manages ArgoCD)
+        ├── sealed-secrets.yaml      → Helm chart (encrypts secrets for GitOps)
+        ├── cloudnative-pg.yaml      → Helm chart (PostgreSQL operator)
+        ├── homepage.yaml            → Helm chart with apps/homepage/values.yaml
+        ├── kube-prometheus-stack.yaml → Helm chart with apps/kube-prometheus-stack/values.yaml
+        └── miniflux.yaml            → Helm chart + CNPG database (RSS reader)
 ```
 
 - **root-app.yaml**: Entry point that watches `apps/` directory for Application manifests
@@ -66,6 +78,7 @@ All require `/etc/hosts` entries pointing to cluster IP:
 - `grafana.homelab` - Grafana dashboards
 - `homepage.homelab` - Homelab dashboard
 - `prometheus.homelab` - Prometheus UI
+- `miniflux.homelab` - Miniflux RSS reader
 
 ## Technology Stack
 
@@ -73,6 +86,8 @@ All require `/etc/hosts` entries pointing to cluster IP:
 - **ArgoCD**: GitOps continuous delivery
 - **Kustomize**: Used for ArgoCD bootstrap
 - **Helm**: Used for application deployments via ArgoCD
+- **Sealed Secrets**: Encrypt secrets so they can be safely committed to Git
+- **CloudNativePG**: Kubernetes operator for managing PostgreSQL databases
 
 ## Maintaining This File
 

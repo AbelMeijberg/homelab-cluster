@@ -1,0 +1,50 @@
+# CloudNativePG PostgreSQL Cluster for Miniflux
+#
+# This demonstrates the Operator Pattern:
+# - We declare a "Cluster" custom resource (CRD)
+# - The CNPG operator watches for these and provisions PostgreSQL
+# - It automatically creates:
+#   - A StatefulSet with PostgreSQL pods
+#   - Services for read/write and read-only access
+#   - Secrets with connection credentials (miniflux-db-app, miniflux-db-superuser)
+#   - PVCs for data storage
+#
+# The secret "miniflux-db-app" will contain:
+#   username, password, host, port, dbname, uri (full connection string)
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: miniflux-db
+  namespace: miniflux
+spec:
+  # Single instance for homelab (no HA needed)
+  # For production, set to 3 for automatic failover
+  instances: 1
+
+  # Storage configuration
+  storage:
+    size: 1Gi
+    # Uses default StorageClass (local-path on k3s)
+
+  # Database bootstrap - creates the miniflux database and user
+  bootstrap:
+    initdb:
+      database: miniflux
+      owner: miniflux
+      # CNPG auto-generates a secure password and stores it in the secret
+
+  # Resource limits for homelab
+  resources:
+    requests:
+      memory: 128Mi
+      cpu: 50m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+
+  # PostgreSQL configuration tuned for small homelab instance
+  postgresql:
+    parameters:
+      shared_buffers: "64MB"
+      effective_cache_size: "128MB"
+      max_connections: "50"
