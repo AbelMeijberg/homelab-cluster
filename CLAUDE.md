@@ -28,7 +28,8 @@ kubectl get clusters --all-namespaces
 kubectl get secret <cluster-name>-app -n <namespace> -o jsonpath='{.data.uri}' | base64 -d
 
 # Create a sealed secret (encrypt plaintext secret)
-kubectl create secret generic <name> --from-literal=KEY=value --dry-run=client -o yaml | kubeseal --format yaml > sealed-secret.yaml
+kubectl create secret generic <name> -n <namespace> --from-literal=KEY=value --dry-run=client -o yaml | \
+  kubeseal --controller-name=sealed-secrets --controller-namespace=sealed-secrets --format yaml > sealed-secret.yaml
 ```
 
 ## Architecture

@@ -33,7 +33,9 @@ kubectl create secret generic miniflux-admin \
   --dry-run=client -o yaml > /tmp/miniflux-admin.yaml
 
 # Encrypt it using the cluster's public key
-kubeseal --format yaml < /tmp/miniflux-admin.yaml > apps/miniflux/admin-secret.yaml
+# Note: --controller-name and --controller-namespace are needed because Helm uses different naming
+kubeseal --controller-name=sealed-secrets --controller-namespace=sealed-secrets \
+  --format yaml < /tmp/miniflux-admin.yaml > apps/miniflux/admin-secret.yaml
 
 # Clean up the plaintext file
 rm /tmp/miniflux-admin.yaml

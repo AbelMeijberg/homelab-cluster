@@ -28,17 +28,17 @@ env:
   # then uncomment these lines and update miniflux.yaml to include
   # admin-secret.yaml in the directory include pattern.
   #
-  # CREATE_ADMIN: "1"
-  # ADMIN_USERNAME:
-  #   valueFrom:
-  #     secretKeyRef:
-  #       name: miniflux-admin
-  #       key: ADMIN_USERNAME
-  # ADMIN_PASSWORD:
-  #   valueFrom:
-  #     secretKeyRef:
-  #       name: miniflux-admin
-  #       key: ADMIN_PASSWORD
+  CREATE_ADMIN: "1"
+  ADMIN_USERNAME:
+    valueFrom:
+      secretKeyRef:
+        name: miniflux-admin
+        key: ADMIN_USERNAME
+  ADMIN_PASSWORD:
+    valueFrom:
+      secretKeyRef:
+        name: miniflux-admin
+        key: ADMIN_PASSWORD
 
 # Ingress configuration using Traefik (k3s default)
 ingress:
