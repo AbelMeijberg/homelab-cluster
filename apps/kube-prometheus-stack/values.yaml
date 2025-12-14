@@ -31,6 +31,15 @@ prometheus:
 
 # Grafana configuration
 grafana:
+  # Add Loki as a datasource for log queries
+  additionalDataSources:
+    - name: Loki
+      type: loki
+      access: proxy
+      url: http://loki.loki:3100
+      isDefault: false
+      editable: true
+
   # Ingress for Grafana UI
   ingress:
     enabled: true

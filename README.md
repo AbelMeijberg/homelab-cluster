@@ -9,6 +9,8 @@ GitOps repository for my k3s homelab cluster using ArgoCD with the App of Apps p
 | **ArgoCD** | GitOps continuous delivery | [argocd.homelab](http://argocd.homelab) | argocd.\<tailnet\>.ts.net |
 | **Grafana** | Dashboards & visualization | [grafana.homelab](http://grafana.homelab) | grafana.\<tailnet\>.ts.net |
 | **Prometheus** | Metrics collection | [prometheus.homelab](http://prometheus.homelab) | prometheus.\<tailnet\>.ts.net |
+| **Loki** | Log aggregation | - (query via Grafana) | - |
+| **Alloy** | Log collector (DaemonSet) | - | - |
 | **Miniflux** | RSS reader | [miniflux.homelab](http://miniflux.homelab) | miniflux.\<tailnet\>.ts.net |
 | **Sealed Secrets** | Encrypt secrets for Git | - | - |
 | **CloudNativePG** | PostgreSQL operator | - | - |

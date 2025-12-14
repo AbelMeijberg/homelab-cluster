@@ -43,6 +43,17 @@ kubectl create secret generic operator-oauth -n tailscale \
   --from-literal=client_id="<ID>" --from-literal=client_secret="<SECRET>" \
   --dry-run=client -o yaml | kubeseal --controller-name=sealed-secrets \
   --controller-namespace=sealed-secrets --format yaml > apps/tailscale/oauth-secret.yaml
+
+# Check Loki status
+kubectl get pods -n loki
+kubectl logs -n loki deployment/loki
+
+# Check Alloy log collector status
+kubectl get pods -n alloy
+kubectl logs -n alloy daemonset/alloy-alloy
+
+# Query logs in Grafana (or use LogCLI)
+# Go to Grafana -> Explore -> Select "Loki" -> Query: {namespace="argocd"}
 ```
 
 ## Architecture
@@ -57,6 +68,8 @@ root-app.yaml (entry point - watches apps/ directory)
         ├── sealed-secrets.yaml      → Helm chart (encrypts secrets for GitOps)
         ├── cloudnative-pg.yaml      → Helm chart (PostgreSQL operator)
         ├── kube-prometheus-stack.yaml → Helm chart with apps/kube-prometheus-stack/values.yaml
+        ├── loki.yaml                → Helm chart (log aggregation backend)
+        ├── alloy.yaml               → Helm chart (log collector DaemonSet)
         ├── miniflux.yaml            → Helm chart + CNPG database (RSS reader)
         ├── tailscale.yaml           → Helm chart (Tailscale operator for remote access)
         └── tailscale-ingresses.yaml → Ingress resources for Tailscale
@@ -109,6 +122,8 @@ root-app.yaml (entry point - watches apps/ directory)
 - **Sealed Secrets**: Encrypt secrets so they can be safely committed to Git
 - **CloudNativePG**: Kubernetes operator for managing PostgreSQL databases
 - **Tailscale Operator**: Enables remote access to services via Tailscale network
+- **Loki**: Log aggregation backend (monolithic mode with local filesystem storage)
+- **Alloy**: Log collector agent (DaemonSet, collects pod logs via Kubernetes API)
 
 ## Maintaining Documentation
 
