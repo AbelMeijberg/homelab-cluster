@@ -1,0 +1,25 @@
+# Tailscale Kubernetes Operator Helm values
+# https://tailscale.com/kb/1236/kubernetes-operator
+
+# OAuth credentials are loaded from the 'operator-oauth' secret
+# created by the SealedSecret in this directory.
+# The secret must contain 'client_id' and 'client_secret' keys.
+oauth:
+  clientId: ""
+  clientSecret: ""
+
+# Resource limits appropriate for homelab
+operatorConfig:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Proxy configuration for ingress pods
+proxyConfig:
+  # Default tags applied to Tailscale devices created by the operator
+  # Must match tags configured in your tailnet ACL policy
+  defaultTags: "tag:k8s"

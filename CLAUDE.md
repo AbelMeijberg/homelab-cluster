@@ -30,6 +30,19 @@ kubectl get secret <cluster-name>-app -n <namespace> -o jsonpath='{.data.uri}' |
 # Create a sealed secret (encrypt plaintext secret)
 kubectl create secret generic <name> -n <namespace> --from-literal=KEY=value --dry-run=client -o yaml | \
   kubeseal --controller-name=sealed-secrets --controller-namespace=sealed-secrets --format yaml > sealed-secret.yaml
+
+# Check Tailscale operator status
+kubectl get pods -n tailscale
+kubectl logs -n tailscale deployment/tailscale-operator
+
+# View Tailscale ingresses
+kubectl get ingress -A -l app.kubernetes.io/managed-by=tailscale-operator
+
+# Regenerate Tailscale OAuth sealed secret (see apps/tailscale/README.md for full instructions)
+kubectl create secret generic operator-oauth -n tailscale \
+  --from-literal=client_id="<ID>" --from-literal=client_secret="<SECRET>" \
+  --dry-run=client -o yaml | kubeseal --controller-name=sealed-secrets \
+  --controller-namespace=sealed-secrets --format yaml > apps/tailscale/oauth-secret.yaml
 ```
 
 ## Architecture
@@ -43,9 +56,10 @@ root-app.yaml (entry point - watches apps/ directory)
         ├── argocd.yaml              → bootstrap/argocd/ (self-manages ArgoCD)
         ├── sealed-secrets.yaml      → Helm chart (encrypts secrets for GitOps)
         ├── cloudnative-pg.yaml      → Helm chart (PostgreSQL operator)
-        ├── homepage.yaml            → Helm chart with apps/homepage/values.yaml
         ├── kube-prometheus-stack.yaml → Helm chart with apps/kube-prometheus-stack/values.yaml
-        └── miniflux.yaml            → Helm chart + CNPG database (RSS reader)
+        ├── miniflux.yaml            → Helm chart + CNPG database (RSS reader)
+        ├── tailscale.yaml           → Helm chart (Tailscale operator for remote access)
+        └── tailscale-ingresses.yaml → Ingress resources for Tailscale
 ```
 
 - **root-app.yaml**: Entry point that watches `apps/` directory for Application manifests
@@ -74,12 +88,17 @@ root-app.yaml (entry point - watches apps/ directory)
 
 ### Key Hostnames
 
-All require `/etc/hosts` entries pointing to cluster IP:
+**Local access** (requires `/etc/hosts` entries pointing to cluster IP):
 - `argocd.homelab` - ArgoCD UI
 - `grafana.homelab` - Grafana dashboards
-- `homepage.homelab` - Homelab dashboard
 - `prometheus.homelab` - Prometheus UI
 - `miniflux.homelab` - Miniflux RSS reader
+
+**Remote access via Tailscale** (accessible from any tailnet device):
+- `argocd.<tailnet>.ts.net` - ArgoCD UI
+- `grafana.<tailnet>.ts.net` - Grafana dashboards
+- `prometheus.<tailnet>.ts.net` - Prometheus UI
+- `miniflux.<tailnet>.ts.net` - Miniflux RSS reader
 
 ## Technology Stack
 
@@ -89,7 +108,11 @@ All require `/etc/hosts` entries pointing to cluster IP:
 - **Helm**: Used for application deployments via ArgoCD
 - **Sealed Secrets**: Encrypt secrets so they can be safely committed to Git
 - **CloudNativePG**: Kubernetes operator for managing PostgreSQL databases
+- **Tailscale Operator**: Enables remote access to services via Tailscale network
 
-## Maintaining This File
+## Maintaining Documentation
 
-Update this CLAUDE.md file after adding new features or applications to keep it current with the repository state.
+After adding new features or applications, update:
+
+1. **CLAUDE.md** - This file (architecture diagrams, commands, technology stack)
+2. **README.md** - The "Deployed Applications" table and /etc/hosts entries

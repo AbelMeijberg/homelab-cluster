@@ -2,11 +2,45 @@
 
 GitOps repository for my k3s homelab cluster using ArgoCD with the App of Apps pattern.
 
+## Deployed Applications
+
+| Application | Description | Local Access | Tailscale Access |
+|-------------|-------------|--------------|------------------|
+| **ArgoCD** | GitOps continuous delivery | [argocd.homelab](http://argocd.homelab) | argocd.\<tailnet\>.ts.net |
+| **Grafana** | Dashboards & visualization | [grafana.homelab](http://grafana.homelab) | grafana.\<tailnet\>.ts.net |
+| **Prometheus** | Metrics collection | [prometheus.homelab](http://prometheus.homelab) | prometheus.\<tailnet\>.ts.net |
+| **Miniflux** | RSS reader | [miniflux.homelab](http://miniflux.homelab) | miniflux.\<tailnet\>.ts.net |
+| **Sealed Secrets** | Encrypt secrets for Git | - | - |
+| **CloudNativePG** | PostgreSQL operator | - | - |
+| **Tailscale Operator** | Remote access via tailnet | - | - |
+
+## Accessing Services
+
+### Option 1: Local Access (via /etc/hosts)
+
+Add these entries to your `/etc/hosts` file, replacing `<CLUSTER_IP>` with your k3s node IP:
+
+```
+<CLUSTER_IP>  argocd.homelab
+<CLUSTER_IP>  grafana.homelab
+<CLUSTER_IP>  prometheus.homelab
+<CLUSTER_IP>  miniflux.homelab
+```
+
+### Option 2: Remote Access (via Tailscale)
+
+Services are accessible from any device on your tailnet at `<service>.<tailnet>.ts.net` with automatic HTTPS.
+
+Requires:
+- Tailscale operator deployed with valid OAuth credentials
+- HTTPS and MagicDNS enabled in Tailscale admin console
+
 ## Prerequisites
 
 - k3s cluster running with Traefik ingress
 - `kubectl` configured to access your cluster
-- DNS or `/etc/hosts` entry pointing `argocd.homelab` to your cluster IP
+- `kubeseal` CLI for creating sealed secrets
+- (Optional) Tailscale account for remote access
 
 ## Repository Structure
 

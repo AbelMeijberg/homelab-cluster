@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tailscale-ingresses
+  namespace: argocd
+  annotations:
+    # Deploy after the Tailscale operator is running
+    argocd.argoproj.io/sync-wave: "1"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/AbelMeijberg/homelab-cluster.git
+    targetRevision: main
+    path: apps/tailscale-ingresses
+  destination:
+    server: https://kubernetes.default.svc
+    # Ingresses are applied to their own namespaces via metadata
+    namespace: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

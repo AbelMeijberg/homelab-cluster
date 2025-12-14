@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tailscale
+  namespace: argocd
+  annotations:
+    # Deploy before apps that depend on the Tailscale ingress class
+    argocd.argoproj.io/sync-wave: "-1"
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  sources:
+    # Source 1: Tailscale Operator Helm chart
+    - repoURL: https://pkgs.tailscale.com/helmcharts
+      chart: tailscale-operator
+      targetRevision: 1.90.9
+      helm:
+        valueFiles:
+          - $values/apps/tailscale/values.yaml
+    # Source 2: Git repo for Helm values reference
+    - repoURL: https://github.com/AbelMeijberg/homelab-cluster.git
+      targetRevision: main
+      ref: values
+    # Source 3: Raw manifests (SealedSecret for OAuth credentials)
+    - repoURL: https://github.com/AbelMeijberg/homelab-cluster.git
+      targetRevision: main
+      path: apps/tailscale
+      directory:
+        include: "oauth-secret.yaml"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: tailscale
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
