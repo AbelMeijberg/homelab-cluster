@@ -12,7 +12,7 @@ GitOps repository for my k3s homelab cluster using ArgoCD with the App of Apps p
 | **Miniflux** | RSS reader | [miniflux.homelab](http://miniflux.homelab) | miniflux.\<tailnet\>.ts.net |
 | **Sealed Secrets** | Encrypt secrets for Git | - | - |
 | **CloudNativePG** | PostgreSQL operator | - | - |
-| **Tailscale Operator** | Remote access via tailnet | - | - |
+| **[Tailscale Operator](apps/tailscale/README.md)** | Remote access via tailnet | - | - |
 
 ## Accessing Services
 
@@ -32,14 +32,13 @@ Add these entries to your `/etc/hosts` file, replacing `<CLUSTER_IP>` with your 
 Services are accessible from any device on your tailnet at `<service>.<tailnet>.ts.net` with automatic HTTPS.
 
 Requires:
-- Tailscale operator deployed with valid OAuth credentials
+- Tailscale operator deployed with valid OAuth credentials (see [setup instructions](apps/tailscale/README.md))
 - HTTPS and MagicDNS enabled in Tailscale admin console
 
 ## Prerequisites
 
 - k3s cluster running with Traefik ingress
-- `kubectl` configured to access your cluster
-- `kubeseal` CLI for creating sealed secrets
+- [Nix](https://nixos.org/download/) with flakes enabled - run `nix develop` to get all required tools (kubectl, kubeseal, helm, etc.)
 - (Optional) Tailscale account for remote access
 
 ## Repository Structure
