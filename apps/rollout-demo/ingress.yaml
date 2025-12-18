@@ -1,0 +1,41 @@
+# Ingress for the active (production) version
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rollout-demo
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: rollout-demo.homelab
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rollout-demo-active
+                port:
+                  number: 80
+---
+# Ingress for the preview version (test before promoting)
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rollout-demo-preview
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: rollout-demo-preview.homelab
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rollout-demo-preview
+                port:
+                  number: 80

@@ -1,0 +1,25 @@
+# Active service - receives production traffic
+# Points to the current stable version
+apiVersion: v1
+kind: Service
+metadata:
+  name: rollout-demo-active
+spec:
+  selector:
+    app: rollout-demo
+  ports:
+    - port: 80
+      targetPort: 8080
+---
+# Preview service - for testing new versions
+# Points to the new version before promotion
+apiVersion: v1
+kind: Service
+metadata:
+  name: rollout-demo-preview
+spec:
+  selector:
+    app: rollout-demo
+  ports:
+    - port: 80
+      targetPort: 8080

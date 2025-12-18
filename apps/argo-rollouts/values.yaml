@@ -1,0 +1,32 @@
+# Argo Rollouts values for homelab
+# Enables advanced deployment strategies (Blue-Green, Canary)
+
+# Controller resources - homelab friendly
+controller:
+  resources:
+    requests:
+      memory: 64Mi
+      cpu: 10m
+    limits:
+      memory: 128Mi
+      cpu: 100m
+
+# Enable the Rollouts Dashboard UI
+dashboard:
+  enabled: true
+  resources:
+    requests:
+      memory: 32Mi
+      cpu: 10m
+    limits:
+      memory: 64Mi
+      cpu: 50m
+
+  # Expose dashboard via Traefik ingress
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: web
+    hosts:
+      - rollouts.homelab
