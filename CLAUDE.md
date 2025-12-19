@@ -97,7 +97,8 @@ root-app.yaml (entry point - watches apps/ directory)
        ref: values
    ```
 3. Create `apps/<app-name>/values.yaml` with Helm overrides
-4. Commit and push - ArgoCD auto-discovers and deploys
+4. Add a Tailscale ingress in `apps/tailscale-ingresses/<app-name>.yaml` for remote access (use existing ingresses as a template)
+5. Commit and push - ArgoCD auto-discovers and deploys
 
 ### Key Hostnames
 
@@ -106,12 +107,14 @@ root-app.yaml (entry point - watches apps/ directory)
 - `grafana.homelab` - Grafana dashboards
 - `prometheus.homelab` - Prometheus UI
 - `miniflux.homelab` - Miniflux RSS reader
+- `rollout-demo.homelab` - Rollout demo app
 
 **Remote access via Tailscale** (accessible from any tailnet device):
 - `argocd.<tailnet>.ts.net` - ArgoCD UI
 - `grafana.<tailnet>.ts.net` - Grafana dashboards
 - `prometheus.<tailnet>.ts.net` - Prometheus UI
 - `miniflux.<tailnet>.ts.net` - Miniflux RSS reader
+- `rollout-demo.<tailnet>.ts.net` - Rollout demo app
 
 ## Technology Stack
 

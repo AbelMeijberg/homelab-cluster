@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rollout-demo-tailscale
+  namespace: rollout-demo
+spec:
+  ingressClassName: tailscale
+  tls:
+    - hosts:
+        - rollout-demo
+  rules:
+    - host: rollout-demo
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rollout-demo
+                port:
+                  number: 80
