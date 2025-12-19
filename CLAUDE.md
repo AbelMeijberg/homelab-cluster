@@ -54,18 +54,6 @@ kubectl logs -n alloy daemonset/alloy-alloy
 
 # Query logs in Grafana (or use LogCLI)
 # Go to Grafana -> Explore -> Select "Loki" -> Query: {namespace="argocd"}
-
-# Argo Rollouts - watch a rollout in progress
-kubectl argo rollouts get rollout rollout-demo -n rollout-demo --watch
-
-# Promote a blue-green rollout (switch traffic to new version)
-kubectl argo rollouts promote rollout-demo -n rollout-demo
-
-# Abort a rollout (revert to previous version)
-kubectl argo rollouts abort rollout-demo -n rollout-demo
-
-# View rollout history
-kubectl argo rollouts history rollout-demo -n rollout-demo
 ```
 
 ## Architecture
@@ -84,9 +72,7 @@ root-app.yaml (entry point - watches apps/ directory)
         ├── alloy.yaml               → Helm chart (log collector DaemonSet)
         ├── miniflux.yaml            → Helm chart + CNPG database (RSS reader)
         ├── tailscale.yaml           → Helm chart (Tailscale operator for remote access)
-        ├── tailscale-ingresses.yaml → Ingress resources for Tailscale
-        ├── argo-rollouts.yaml       → Helm chart (advanced deployment strategies)
-        └── rollout-demo.yaml        → Blue-Green deployment demo application
+        └── tailscale-ingresses.yaml → Ingress resources for Tailscale
 ```
 
 - **root-app.yaml**: Entry point that watches `apps/` directory for Application manifests
@@ -120,18 +106,12 @@ root-app.yaml (entry point - watches apps/ directory)
 - `grafana.homelab` - Grafana dashboards
 - `prometheus.homelab` - Prometheus UI
 - `miniflux.homelab` - Miniflux RSS reader
-- `rollouts.homelab` - Argo Rollouts dashboard
-- `rollout-demo.homelab` - Blue-Green demo (active/production)
-- `rollout-demo-preview.homelab` - Blue-Green demo (preview/staging)
 
 **Remote access via Tailscale** (accessible from any tailnet device):
 - `argocd.<tailnet>.ts.net` - ArgoCD UI
 - `grafana.<tailnet>.ts.net` - Grafana dashboards
 - `prometheus.<tailnet>.ts.net` - Prometheus UI
 - `miniflux.<tailnet>.ts.net` - Miniflux RSS reader
-- `rollouts.<tailnet>.ts.net` - Argo Rollouts dashboard
-- `rollout-demo.<tailnet>.ts.net` - Blue-Green demo (active)
-- `rollout-demo-preview.<tailnet>.ts.net` - Blue-Green demo (preview)
 
 ## Technology Stack
 
@@ -144,7 +124,6 @@ root-app.yaml (entry point - watches apps/ directory)
 - **Tailscale Operator**: Enables remote access to services via Tailscale network
 - **Loki**: Log aggregation backend (monolithic mode with local filesystem storage)
 - **Alloy**: Log collector agent (DaemonSet, collects pod logs via Kubernetes API)
-- **Argo Rollouts**: Advanced deployment strategies (Blue-Green, Canary) with manual approval gates
 
 ## Maintaining Documentation
 

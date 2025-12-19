@@ -15,8 +15,6 @@ GitOps repository for my k3s homelab cluster using ArgoCD with the App of Apps p
 | **Sealed Secrets** | Encrypt secrets for Git | - | - |
 | **CloudNativePG** | PostgreSQL operator | - | - |
 | **[Tailscale Operator](apps/tailscale/README.md)** | Remote access via tailnet | - | - |
-| **Argo Rollouts** | Advanced deployment strategies | [rollouts.homelab](http://rollouts.homelab) | rollouts.\<tailnet\>.ts.net |
-| **Rollout Demo** | Blue-Green deployment demo | [rollout-demo.homelab](http://rollout-demo.homelab) | rollout-demo.\<tailnet\>.ts.net |
 
 ## Accessing Services
 
@@ -29,9 +27,6 @@ Add these entries to your `/etc/hosts` file, replacing `<CLUSTER_IP>` with your 
 <CLUSTER_IP>  grafana.homelab
 <CLUSTER_IP>  prometheus.homelab
 <CLUSTER_IP>  miniflux.homelab
-<CLUSTER_IP>  rollouts.homelab
-<CLUSTER_IP>  rollout-demo.homelab
-<CLUSTER_IP>  rollout-demo-preview.homelab
 ```
 
 ### Option 2: Remote Access (via Tailscale)
